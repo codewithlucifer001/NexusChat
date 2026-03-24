@@ -1,14 +1,17 @@
-
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 
 const app = express();
+
+// --- CHANGE 1: Added global CORS middleware to prevent browser blocking ---
+app.use(cors()); 
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: "*", // Allows connections from any frontend URL (like GitHub Pages)
     methods: ["GET", "POST"]
   }
 });
@@ -140,6 +143,9 @@ io.on('connection', (socket) => {
   });
 });
 
-httpServer.listen(3001, () => {
-  console.log('NexusChat server running on port 3001');
+// --- CHANGE 2: Using process.env.PORT for Railway compatibility ---
+const PORT = process.env.PORT || 3001;
+
+httpServer.listen(PORT, () => {
+  console.log(`NexusChat server running on port ${PORT}`);
 });
